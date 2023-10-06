@@ -24,6 +24,7 @@ public class Map extends JPanel {
     private static final String MSG_DRAW = "It's draw!";
     private int fieldSizeX = 3;
     private int fieldSizeY = 3;
+    private int winLen;
     private int[][] field;
 
     private int panelWidth;
@@ -43,9 +44,10 @@ public class Map extends JPanel {
         isInitialized = false;
     }
 
-    private void initMap() {
-        fieldSizeX = 3;
-        fieldSizeY = 3;
+    private void initMap(int fieldSizeX, int fieldSizeY, int winLen) {
+        this.fieldSizeX = fieldSizeX;
+        this.fieldSizeY = fieldSizeY;
+        this.winLen = winLen;
         field = new int[fieldSizeY][fieldSizeX];
         for (int i = 0; i < fieldSizeY; i++) {
             for (int j = 0; j < fieldSizeX; j++) {
@@ -63,19 +65,29 @@ public class Map extends JPanel {
         return field[y][x] == EMPY_DOT;
     }
 
-    private boolean checkWin(int c) {
-        if (field[0][0] == c && field[0][1] == c && field[0][2] == c) return true;
-        if (field[1][0] == c && field[1][1] == c && field[1][2] == c) return true;
-        if (field[2][0] == c && field[2][1] == c && field[2][2] == c) return true;
-
-        if (field[0][0] == c && field[1][0] == c && field[2][0] == c) return true;
-        if (field[0][1] == c && field[1][1] == c && field[2][1] == c) return true;
-        if (field[0][2] == c && field[1][2] == c && field[2][2] == c) return true;
-
-        if (field[0][0] == c && field[1][1] == c && field[2][2] == c) return true;
-        if (field[0][2] == c && field[1][1] == c && field[2][0] == c) return true;
-
+    private boolean checkWin(int dot) {
+        for (int i = 0; i < fieldSizeX; i++) {
+            for (int j = 0; j < fieldSizeY; j++) {
+                if (checkLine(i, j, 1, 0, winLen, dot)) return true;
+                if (checkLine(i, j, 1, 1, winLen, dot)) return true;
+                if (checkLine(i, j, 0, 1, winLen, dot)) return true;
+                if (checkLine(i, j, 1, -1, winLen, dot)) return true;
+            }
+        }
         return false;
+    }
+    private boolean checkLine(int x, int y, int vx, int vy, int len, int dot){
+        int far_x = x + (len - 1) * vx;
+        int far_y = y + (len - 1) * vy;
+        if (!isValidCell(far_x, far_y)){
+            return false;
+        }
+        for (int i = 0; i < len; i++) {
+            if (field[y + i * vy][x + i * vx] != dot){
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean isMapFull() {
@@ -130,9 +142,10 @@ public class Map extends JPanel {
 
     void startNewGame(int mode, int fSzX, int fSzY, int wLen) {
         System.out.printf("Mode: %d, size: %d x %d, win len = %d\n", mode, fSzX, fSzY, wLen);
-        initMap();
+        initMap(fSzX,fSzY,wLen);
         isGameOver = false;
         isInitialized = true;
+
         repaint();
     }
 
@@ -147,14 +160,14 @@ public class Map extends JPanel {
         if (!isInitialized) return;
         panelWidth = getWidth();
         panelHeight = getHeight();
-        cellWidth = panelWidth / 3;
-        cellHeight = panelHeight / 3;
+        cellWidth = panelWidth / fieldSizeX;
+        cellHeight = panelHeight / fieldSizeY;
         graphics.setColor(Color.BLACK);
-        for (int h = 0; h < 3; h++) {
+        for (int h = 0; h < fieldSizeY; h++) {
             int y = h * cellHeight;
             graphics.drawLine(0, y, panelWidth, y);
         }
-        for (int w = 0; w < 3; w++) {
+        for (int w = 0; w < fieldSizeX; w++) {
             int x = w * cellWidth;
             graphics.drawLine(x, 0, x, panelHeight);
         }
