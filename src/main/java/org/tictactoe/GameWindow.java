@@ -1,4 +1,4 @@
-package org.example;
+package org.tictactoe;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,10 +10,12 @@ public class GameWindow extends JFrame {
     private static final int WINDOW_WIDTH = 507;
     private static final int WINDOW_POSX = 800;
     private static final int WINDOW_POSY = 300;
+    public static final String BTN_NEW_GAME = "New Game";
+    public static final String BTN_EXIT = "Exit";
     Map map;
     SettingsWindow settings;
-    JButton btnStart = new JButton("New Game");
-    JButton btnExit = new JButton("Exit");
+    JButton btnStart = new JButton(BTN_NEW_GAME);
+    JButton btnExit = new JButton(BTN_EXIT);
 
     GameWindow() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
