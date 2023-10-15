@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ClientWindow extends JFrame {
+    protected ServerWindow serverWindow;
     public static final String WINDOW_CAPTION = "Chat client";
     private static final int WINDOW_HEIGHT = 230;
     private static final int WINDOW_WIDTH = 350;
@@ -38,6 +39,10 @@ public class ClientWindow extends JFrame {
         add(createTopPanel(), BorderLayout.NORTH);
         add(createMiddlePanel(), BorderLayout.CENTER);
         add(createBottomPanel(), BorderLayout.SOUTH);
+    }
+
+    protected void setServer(ServerWindow serverWindow) {
+        this.serverWindow = serverWindow;
     }
 
     Component createTopPanel() {
@@ -80,6 +85,10 @@ public class ClientWindow extends JFrame {
         return messagesField;
     }
 
+    protected void putMessagesInMessageField(String messages) {
+        messagesField.append(messages);
+    }
+
     Component createBottomPanel() {
         bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.LINE_AXIS));
@@ -90,6 +99,12 @@ public class ClientWindow extends JFrame {
 
     Component createInputField() {
         inputField = new JTextField();
+        inputField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                sendMessage();
+            }
+        });
         return inputField;
     }
 
@@ -106,6 +121,16 @@ public class ClientWindow extends JFrame {
     }
 
     private void sendMessage() {
-        System.out.println("Send button is pressed");
+
+        String message = inputField.getText();
+        inputField.setText("");
+
+        messagesField.append(message + "\n");
+        serverWindow.saveMessage(message + "\n");
+    }
+
+    protected void closeConnection() {
+        inputField.setText("");
+
     }
 }
